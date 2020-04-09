@@ -29,8 +29,6 @@
 # Features:
 * Visual representation of data for data analyst.
 
-![Dashboard](https://github.com/yeamin21/Airport_Data_Management/blob/master/src/warehouse/resourses/DashboardSS.png)
-
 *  Admin can create Create, Read, Update and Delete datas
 
 ![CRUD](https://github.com/yeamin21/Airport_Data_Management/blob/master/src/warehouse/resourses/SS_manageAirport.png)
