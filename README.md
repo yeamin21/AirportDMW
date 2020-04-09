@@ -1,4 +1,4 @@
-![Dashboard](https://github.com/yeamin21/Airport_Data_Management/blob/master/src/warehouse/resourses/SS_Dashboard.png)
+![Dashboard](https://github.com/yeamin21/Airport_Data_Management/blob/master/src/warehouse/resourses/DashboardSS.png)
 
 # Airport Data Management
 
