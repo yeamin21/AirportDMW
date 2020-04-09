@@ -107,38 +107,20 @@
               <Color blue="8f" green="e0" red="78" type="rgb"/>
             </Property>
             <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-              <Table columnCount="12" rowCount="0">
+              <Table columnCount="9" rowCount="0">
                 <Column editable="false" title="Date" type="java.lang.Object"/>
-                <Column editable="false" title="Fact ID" type="java.lang.Object"/>
+                <Column editable="false" title="Booking ID" type="java.lang.Object"/>
                 <Column editable="false" title="Agent" type="java.lang.Object"/>
                 <Column editable="false" title="Flight" type="java.lang.Object"/>
-                <Column editable="false" title="Origin" type="java.lang.Object"/>
-                <Column editable="false" title="Destination" type="java.lang.Object"/>
                 <Column editable="false" title="Cost" type="java.lang.Object"/>
                 <Column editable="false" title="Paid" type="java.lang.Object"/>
                 <Column editable="false" title="Booked" type="java.lang.Object"/>
-                <Column editable="false" title="Reserved" type="java.lang.Object"/>
                 <Column editable="false" title="Airline" type="java.lang.Object"/>
                 <Column editable="false" title="Aircraft" type="java.lang.Object"/>
               </Table>
             </Property>
             <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
               <TableColumnModel selectionModel="0">
-                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                  <Title/>
-                  <Editor/>
-                  <Renderer/>
-                </Column>
-                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                  <Title/>
-                  <Editor/>
-                  <Renderer/>
-                </Column>
-                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                  <Title/>
-                  <Editor/>
-                  <Renderer/>
-                </Column>
                 <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
                   <Title/>
                   <Editor/>
