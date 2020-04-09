@@ -93,9 +93,15 @@ insert into Flights(flight_no,airline_aircraft_code,origin_airport_code,destinat
 
 
 
-insert into payment(billing_id,	amount,date) values(1001,5000,GETDATE())
+insert into payment(billing_id,	amount,date) values(1000,5000,GETDATE())
 insert into payment(billing_id,	amount,date) values(1001,5000,GETDATE())
 insert into payment(billing_id,	amount,date) values(1002,5000,GETDATE())
+insert into payment(billing_id,	amount,date) values(1003,5000,GETDATE())
+insert into payment(billing_id,	amount,date) values(1004,5000,GETDATE())
+insert into payment(billing_id,	amount,date) values(1005,5000,GETDATE())
+insert into payment(billing_id,	amount,date) values(1006,5000,GETDATE())
+insert into payment(billing_id,	amount,date) values(1007,5000,GETDATE())
+insert into admin(admin_id,admin_pass) values('yeamin21','1234')
 
 
 
@@ -183,9 +189,47 @@ COUNT(bookingdate) AS c_booking_date
 FROM booking
 inner join  billing on billing.booking_status_code=booking.booking_status_code
 gROUP BY bookingdate
-                  
-                   
+                
 
 
-                 
-           
+---whole table
+
+use AirportDM
+SELECT 
+bookingdate,booking.booking_status_code,agent_name,booking.flight_no,cost,is_booked,
+airline_name,aircraft_type_name,sum(amount) as paid,
+count(booking.booking_status_code) over() as total_booking,
+sum(billing.cost)over() as total_earned
+from Booking
+inner join Flights on booking.flight_no=flights.flight_no
+inner join booking_agents on Booking.bookingagent=booking_agents.agent_id
+inner join Airline_Aircraft on Flights.airline_aircraft_code=Airline_Aircraft.airline_aircraft_code
+inner join Airline on airline_aircraft.airline_code=airline.airline_code
+inner join Aircraft on Airline_Aircraft.aircraft_type_code=aircraft.aircraft_type_code
+inner join billing on billing.booking_status_code=booking.booking_status_code
+left join payment on payment.billing_id=billing.billing_id
+group by billing.billing_id,booking.bookingdate, booking.booking_status_code,booking.flight_no,booking_agents.agent_name,billing.cost,
+booking.is_booked,airline.airline_name,Aircraft.aircraft_type_name 
+--a demo search
+having airline.airline_name='Biman Bangla'and booking.booking_status_code=101
+
+--finding booking date 
+Select distinct bookingdate from booking
+
+
+
+SELECT 
+bookingdate,booking.booking_status_code,agent_name,booking.flight_no,cost,is_booked,
+airline_name,aircraft_type_name as paid,
+count(booking.booking_status_code) over() as total_booking
+from Booking
+inner join Flights on booking.flight_no=flights.flight_no
+inner join booking_agents on Booking.bookingagent=booking_agents.agent_id
+inner join Airline_Aircraft on Flights.airline_aircraft_code=Airline_Aircraft.airline_aircraft_code
+inner join Airline on airline_aircraft.airline_code=airline.airline_code
+inner join Aircraft on Airline_Aircraft.aircraft_type_code=aircraft.aircraft_type_code
+inner join billing on billing.booking_status_code=booking.booking_status_code
+
+group by billing.billing_id,booking.bookingdate, booking.booking_status_code,booking.flight_no,booking_agents.agent_name,billing.cost,
+booking.is_booked,airline.airline_name,Aircraft.aircraft_type_name 
+having airline_name='Biman Bangla'
