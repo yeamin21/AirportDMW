@@ -9,8 +9,8 @@
 * Admin Password: Root
 ## Requirements:
  ### Software:
-* IDE: Netbeans
-* For Database: MYSQL
+* IDE: Netbeans, IntelliJ, eclipse. Netbeans Recommended
+* For Database: Microsoft SQL server
 ### Hardware: 
 * CPU: Intel pentium or equivalent AMD processor
 * RAM: 2GB
@@ -19,12 +19,6 @@
 ## Programming Language used in this projects are:
 * JAVA: Frontend
 * SQL: Backend
-
-## Learnings:
-* Java object oriented programming
-* Java graphical user interface development
-* Relational Database
-* Drawing different types of diagram
 
 # Features:
 * Visual representation of data for data analyst.
@@ -37,14 +31,28 @@
 * Booking agent confirms whether 'customers booking' is possible or not
 
 
-# Testings:
-## Testings were done to ensure the quality of the project.
-### Testings that were done:
-* JUnit Testing
-* Parasoft Testing
-* ZAPTest
-* Ranorex Testing
+# Snippets
 
-# Documentation:
+* Customer Login using id or email
+```java
+   private void btnC_SignInActionPerformed(java.awt.event.ActionEvent evt) {                                            
 
-### This project is well documented- UML class diagram, Activity diagram, Use case diagram, ERD, Relational Schema- all are available for this project but due to the "book project" it can't be published here now. Soon they will be published.
+        try {
+            con = ConnectSQL.connect();
+            sql = "select * from customer where customer_email='" + txtC_Email_signIn.getText() + " ' or customer_id='" + txtC_Email_signIn.getText() + "' and customer_password='" + String.valueOf(passC_Pass_signIn.getPassword()) + "'";
+            stm = con.prepareStatement(sql);
+            rs = stm.executeQuery();
+            if (rs.next()) {
+
+                SwitchPanel(panel_customer_booking, "Customer Booking");
+
+                this.CustomerID = rs.getString("customer_id");
+
+            } else {
+                JOptionPane.showMessageDialog(null, "Incorrect Customer Email or Password", "ERROR", JOptionPane.WARNING_MESSAGE);
+            }
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+
+    }
