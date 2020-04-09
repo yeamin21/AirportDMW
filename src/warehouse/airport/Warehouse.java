@@ -14,19 +14,23 @@ public final class Warehouse extends javax.swing.JFrame {
     String sql = null;
     int xMouse, yMouse;
 
-    static String s = "SELECT \n" +
-"bookingdate,booking.booking_status_code,agent_name,booking.flight_no,cost,is_booked,\n" +
-"airline_name,aircraft_type_name,sum(amount) as paid\n" +
-"from Booking\n" +
-"inner join Flights on booking.flight_no=flights.flight_no\n" +
-"inner join booking_agents on Booking.bookingagent=booking_agents.agent_id\n" +
-"inner join Airline_Aircraft on Flights.airline_aircraft_code=Airline_Aircraft.airline_aircraft_code\n" +
-"inner join Airline on airline_aircraft.airline_code=airline.airline_code\n" +
-"inner join Aircraft on Airline_Aircraft.aircraft_type_code=aircraft.aircraft_type_code\n" +
-"inner join billing on billing.booking_status_code=booking.booking_status_code\n" +
-"inner join payment on payment.billing_id=billing.billing_id\n" +
-"group by billing.billing_id,booking.bookingdate, booking.booking_status_code,booking.flight_no,booking_agents.agent_name,billing.cost,\n" +
-"booking.is_booked,airline.airline_name,Aircraft.aircraft_type_name";
+    static String s = "use AirportDM\n"
+            + "SELECT \n"
+            + "bookingdate,booking.booking_status_code,agent_name,booking.flight_no,cost,is_booked,\n"
+            + "airline_name,aircraft_type_name,sum(amount) as paid,\n"
+            + "count(booking.booking_status_code) over() as c_total,\n"
+            + "sum(billing.cost)over() as sum_total\n"
+            + "from Booking\n"
+            + "inner join Flights on booking.flight_no=flights.flight_no\n"
+            + "inner join booking_agents on Booking.bookingagent=booking_agents.agent_id\n"
+            + "inner join Airline_Aircraft on Flights.airline_aircraft_code=Airline_Aircraft.airline_aircraft_code\n"
+            + "inner join Airline on airline_aircraft.airline_code=airline.airline_code\n"
+            + "inner join Aircraft on Airline_Aircraft.aircraft_type_code=aircraft.aircraft_type_code\n"
+            + "inner join billing on billing.booking_status_code=booking.booking_status_code\n"
+            + "left join payment on payment.billing_id=billing.billing_id\n"
+            + "group by billing.billing_id,booking.bookingdate, booking.booking_status_code,booking.flight_no,booking_agents.agent_name,billing.cost,\n"
+            + "booking.is_booked,airline.airline_name,Aircraft.aircraft_type_name";
+         
 
     public Warehouse() {
         initComponents();
@@ -54,7 +58,7 @@ public final class Warehouse extends javax.swing.JFrame {
                 row[2] = rs.getString("agent_name");
                 row[3] = rs.getString("flight_no");
                 row[4] = rs.getFloat("cost");
-                row[5] = rs.getFloat("paid");
+                row[5] = rs.getDouble("paid");
                 row[6] = rs.getString("is_booked");
                 row[7] = rs.getString("airline_name");
                 row[8] = rs.getString("aircraft_type_name");
@@ -62,7 +66,8 @@ public final class Warehouse extends javax.swing.JFrame {
                 model.addRow(row);
             }
         } catch (Exception e) {
-System.out.println(e);
+            System.out.println(e);
+              e.printStackTrace();
         }
 
     }
@@ -87,6 +92,7 @@ System.out.println(e);
 
             }
         } catch (Exception e) {
+              e.printStackTrace();
 
         }
         return null;
@@ -100,14 +106,15 @@ System.out.println(e);
             rs = stm.executeQuery();
             while (rs.next()) {
 
-                float x = (float) (Math.round(Float.valueOf(rs.getString("Sum_Total")) * 100.0) / 100.0);
-                String te = String.valueOf(x);
-                jLabel7.setText(te);
+            String te= String.valueOf(rs.getDouble("sum_total"));
+            jLabel7.setText(te);
+                
                 return te;
 
             }
         } catch (SQLException | NumberFormatException e) {
-
+            System.err.println(e);
+              e.printStackTrace();
         }
         return null;
     }
@@ -122,6 +129,7 @@ System.out.println(e);
                 jComboBox2.addItem(rs.getString("agent_name"));
             }
         } catch (Exception e) {
+              e.printStackTrace();
 
         }
     }
@@ -136,7 +144,8 @@ System.out.println(e);
                 jComboBox3.addItem(rs.getDate("bookingdate"));
             }
         } catch (Exception e) {
-             System.out.println(e);
+            System.out.println(e);
+              e.printStackTrace();
 
         }
     }
@@ -151,7 +160,8 @@ System.out.println(e);
                 jComboBox4.addItem(rs.getString("airline_name"));
             }
         } catch (SQLException e) {
-             System.out.println(e);
+            System.out.println(e);
+              e.printStackTrace();
         }
     }
 
@@ -420,232 +430,224 @@ System.out.println(e);
                 rs = stm.executeQuery();
                 while (rs.next()) {
                     DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-                   
-                     
-                Object[] row = new Object[12];
-                row[0] = rs.getDate("bookingdate");
-                row[1] = rs.getInt("booking_status_code");
-                row[2] = rs.getString("agent_name");
-                row[3] = rs.getString("flight_no");
-                row[4] = rs.getFloat("cost");
-                row[5] = rs.getFloat("paid");
-                row[6] = rs.getString("is_booked");
-                row[7] = rs.getString("airline_name");
-                row[8] = rs.getString("aircraft_type_name");
+
+                    Object[] row = new Object[12];
+                    row[0] = rs.getDate("bookingdate");
+                    row[1] = rs.getInt("booking_status_code");
+                    row[2] = rs.getString("agent_name");
+                    row[3] = rs.getString("flight_no");
+                    row[4] = rs.getFloat("cost");
+                    row[5] = rs.getFloat("paid");
+                    row[6] = rs.getString("is_booked");
+                    row[7] = rs.getString("airline_name");
+                    row[8] = rs.getString("aircraft_type_name");
                     model.addRow(row);
-                    float x = (float) (Math.round(Float.valueOf(rs.getString("sum_total")) * 100.0) / 100.0);
-                    jLabel7.setText(String.valueOf(x));
+                   jLabel7.setText(String.valueOf(rs.getDouble("sum_total")));
                     jLabel5.setText(rs.getString("c_total"));
                 }
             } catch (NumberFormatException | SQLException e) {
- System.out.println(e);
+                System.out.println(e);
+                  e.printStackTrace();
             }
 //3selected
         } else if (!jComboBox3.getSelectedItem().equals("") && !jComboBox2.getSelectedItem().equals("") && !jComboBox4.getSelectedItem().equals("")) {
             try {
-                sql = s + "  having  bookingdate='" + jComboBox3.getSelectedItem() + "' and agent_name='" + jComboBox2.getSelectedItem() + "' and airline_name='" + jComboBox4.getSelectedItem() + "'";
+                sql = s + "  having  booking.bookingdate='" + jComboBox3.getSelectedItem() + "' and booking_agents.agent_name='" + jComboBox2.getSelectedItem() + "' and airline.airline_name='" + jComboBox4.getSelectedItem() + "'";
                 stm = con.prepareStatement(sql);
                 rs = stm.executeQuery();
                 while (rs.next()) {
-                    
-                      DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-                   
-                     
-                Object[] row = new Object[12];
-                row[0] = rs.getDate("bookingdate");
-                row[1] = rs.getInt("booking_status_code");
-                row[2] = rs.getString("agent_name");
-                row[3] = rs.getString("flight_no");
-                row[4] = rs.getFloat("cost");
-                row[5] = rs.getFloat("paid");
-                row[6] = rs.getString("is_booked");
-                row[7] = rs.getString("airline_name");
-                row[8] = rs.getString("aircraft_type_name");
+
+                    DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+
+                    Object[] row = new Object[12];
+                    row[0] = rs.getDate("bookingdate");
+                    row[1] = rs.getInt("booking_status_code");
+                    row[2] = rs.getString("agent_name");
+                    row[3] = rs.getString("flight_no");
+                    row[4] = rs.getFloat("cost");
+                    row[5] = rs.getFloat("paid");
+                    row[6] = rs.getString("is_booked");
+                    row[7] = rs.getString("airline_name");
+                    row[8] = rs.getString("aircraft_type_name");
                     model.addRow(row);
-                    float x = (float) (Math.round(Float.valueOf(rs.getString("sum_total")) * 100.0) / 100.0);
-                    jLabel7.setText(String.valueOf(x));
+                   
+                    jLabel7.setText(String.valueOf(rs.getDouble("sum_total")));
                     jLabel5.setText(rs.getString("c_total"));
                 }
             } catch (SQLException | NumberFormatException e) {
                 System.out.println(e);
+                e.printStackTrace();
             }
 
         } //j2 j3|| j4
         else if (!jComboBox3.getSelectedItem().equals("") && !jComboBox2.getSelectedItem().equals("") && jComboBox4.getSelectedItem().equals("")) {
             try {
-                sql = s + "  having  bookingdate='" + jComboBox3.getSelectedItem() + "' and agent_name='" + jComboBox2.getSelectedItem() + "'";
+                sql = s + "  having  booking.bookingdate='" + jComboBox3.getSelectedItem() + "' and booking_agents.agent_name='" + jComboBox2.getSelectedItem() + "'";
                 stm = con.prepareStatement(sql);
                 rs = stm.executeQuery();
                 while (rs.next()) {
-                       DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-                   
-                     
-                Object[] row = new Object[12];
-                row[0] = rs.getDate("bookingdate");
-                row[1] = rs.getInt("booking_status_code");
-                row[2] = rs.getString("agent_name");
-                row[3] = rs.getString("flight_no");
-                row[4] = rs.getFloat("cost");
-                row[5] = rs.getFloat("paid");
-                row[6] = rs.getString("is_booked");
-                row[7] = rs.getString("airline_name");
-                row[8] = rs.getString("aircraft_type_name");
+                    DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+
+                    Object[] row = new Object[12];
+                    row[0] = rs.getDate("bookingdate");
+                    row[1] = rs.getInt("booking_status_code");
+                    row[2] = rs.getString("agent_name");
+                    row[3] = rs.getString("flight_no");
+                    row[4] = rs.getFloat("cost");
+                    row[5] = rs.getFloat("paid");
+                    row[6] = rs.getString("is_booked");
+                    row[7] = rs.getString("airline_name");
+                    row[8] = rs.getString("aircraft_type_name");
                     model.addRow(row);
 
-                    float x = (float) (Math.round(Float.valueOf(rs.getString("sum_total")) * 100.0) / 100.0);
-                    jLabel7.setText(String.valueOf(x));
+                 jLabel7.setText(String.valueOf(rs.getDouble("sum_total")));
                     jLabel5.setText(rs.getString("c_total"));
 
                 }
             } catch (SQLException | NumberFormatException e) {
- System.out.println(e);
+                System.out.println(e);
+                  e.printStackTrace();
             }
 
             //1,3 ||2
         } else if (!jComboBox3.getSelectedItem().equals("") && jComboBox2.getSelectedItem().equals("") && !jComboBox4.getSelectedItem().equals("")) {
             try {
-                sql = s + "  having  bookingdate='" + jComboBox3.getSelectedItem() + "' and airline_name='" + jComboBox4.getSelectedItem() + "'";
+                sql = s + "  having  booking.bookingdate='" + jComboBox3.getSelectedItem() + "' and airline.airline_name='" + jComboBox4.getSelectedItem() + "'";
                 stm = con.prepareStatement(sql);
                 rs = stm.executeQuery();
                 while (rs.next()) {
-                      DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-                   
-                     
-                Object[] row = new Object[12];
-                row[0] = rs.getDate("bookingdate");
-                row[1] = rs.getInt("booking_status_code");
-                row[2] = rs.getString("agent_name");
-                row[3] = rs.getString("flight_no");
-                row[4] = rs.getFloat("cost");
-                row[5] = rs.getFloat("paid");
-                row[6] = rs.getString("is_booked");
-                row[7] = rs.getString("airline_name");
-                row[8] = rs.getString("aircraft_type_name");
+                    DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+
+                    Object[] row = new Object[12];
+                    row[0] = rs.getDate("bookingdate");
+                    row[1] = rs.getInt("booking_status_code");
+                    row[2] = rs.getString("agent_name");
+                    row[3] = rs.getString("flight_no");
+                    row[4] = rs.getFloat("cost");
+                    row[5] = rs.getFloat("paid");
+                    row[6] = rs.getString("is_booked");
+                    row[7] = rs.getString("airline_name");
+                    row[8] = rs.getString("aircraft_type_name");
                     model.addRow(row);
-                    float x = (float) (Math.round(Float.valueOf(rs.getString("sum_total")) * 100.0) / 100.0);
-                    jLabel7.setText(String.valueOf(x));
+                    jLabel7.setText(String.valueOf(rs.getDouble("sum_total")));
                     jLabel5.setText(rs.getString("c_total"));
                 }
             } catch (SQLException | NumberFormatException e) {
- System.out.println(e);
+                System.out.println(e);
+                  e.printStackTrace();
             }
 
         } //2,3||1
         else if (jComboBox3.getSelectedItem().equals("") && !jComboBox2.getSelectedItem().equals("") && !jComboBox4.getSelectedItem().equals("")) {
             try {
-                sql = s + " having  agent_name='" + jComboBox2.getSelectedItem() + "' and airline_name='" + jComboBox4.getSelectedItem() + "'";
+                sql = s + " having  booking_agents.agent_name='" + jComboBox2.getSelectedItem() + "' and airline.airline_name='" + jComboBox4.getSelectedItem() + "'";
                 stm = con.prepareStatement(sql);
                 rs = stm.executeQuery();
                 while (rs.next()) {
-                      DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-                   
-                     
-                Object[] row = new Object[12];
-                row[0] = rs.getDate("bookingdate");
-                row[1] = rs.getInt("booking_status_code");
-                row[2] = rs.getString("agent_name");
-                row[3] = rs.getString("flight_no");
-                row[4] = rs.getFloat("cost");
-                row[5] = rs.getFloat("paid");
-                row[6] = rs.getString("is_booked");
-                row[7] = rs.getString("airline_name");
-                row[8] = rs.getString("aircraft_type_name");
+                    DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+
+                    Object[] row = new Object[12];
+                    row[0] = rs.getDate("bookingdate");
+                    row[1] = rs.getInt("booking_status_code");
+                    row[2] = rs.getString("agent_name");
+                    row[3] = rs.getString("flight_no");
+                    row[4] = rs.getFloat("cost");
+                    row[5] = rs.getFloat("paid");
+                    row[6] = rs.getString("is_booked");
+                    row[7] = rs.getString("airline_name");
+                    row[8] = rs.getString("aircraft_type_name");
                     model.addRow(row);
-                    float x = (float) (Math.round(Float.valueOf(rs.getString("sum_total")) * 100.0) / 100.0);
-                    jLabel7.setText(String.valueOf(x));
+                     jLabel7.setText(String.valueOf(rs.getDouble("sum_total")));
                     jLabel5.setText(rs.getString("c_total"));
                 }
             } catch (SQLException | NumberFormatException e) {
- System.out.println(e);
+                System.out.println(e);
+                  e.printStackTrace();
             }
 
         } //1
-        else if (jComboBox3.getSelectedItem()!="" && jComboBox2.getSelectedItem().equals("") && jComboBox4.getSelectedItem().equals("")) {
+        else if (jComboBox3.getSelectedItem() != "" && jComboBox2.getSelectedItem().equals("") && jComboBox4.getSelectedItem().equals("")) {
             try {
-                sql = s + " having   bookingdate='" + jComboBox3.getSelectedItem() + "'";
+                sql = s + " having   booking.bookingdate='" + jComboBox3.getSelectedItem() + "'";
                 stm = con.prepareStatement(sql);
                 rs = stm.executeQuery();
                 while (rs.next()) {
-                      DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-                   
-                     
-                Object[] row = new Object[12];
-                row[0] = rs.getDate("bookingdate");
-                row[1] = rs.getInt("booking_status_code");
-                row[2] = rs.getString("agent_name");
-                row[3] = rs.getString("flight_no");
-                row[4] = rs.getFloat("cost");
-                row[5] = rs.getFloat("paid");
-                row[6] = rs.getString("is_booked");
-                row[7] = rs.getString("airline_name");
-                row[8] = rs.getString("aircraft_type_name");
+                    DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+
+                    Object[] row = new Object[12];
+                    row[0] = rs.getDate("bookingdate");
+                    row[1] = rs.getInt("booking_status_code");
+                    row[2] = rs.getString("agent_name");
+                    row[3] = rs.getString("flight_no");
+                    row[4] = rs.getFloat("cost");
+                    row[5] = rs.getFloat("paid");
+                    row[6] = rs.getString("is_booked");
+                    row[7] = rs.getString("airline_name");
+                    row[8] = rs.getString("aircraft_type_name");
                     model.addRow(row);
-                    float x = (float) (Math.round(Float.valueOf(rs.getString("sum_total")) * 100.0) / 100.0);
-                    jLabel7.setText(String.valueOf(x));
+                     jLabel7.setText(String.valueOf(rs.getDouble("sum_total")));
                     jLabel5.setText(rs.getString("c_total"));
                 }
             } catch (SQLException | NumberFormatException e) {
- System.out.println(e);
+                System.out.println(e);
+                  e.printStackTrace();
             }
 
         } //2
         else if (jComboBox3.getSelectedItem().equals("") && !jComboBox2.getSelectedItem().equals("") && jComboBox4.getSelectedItem().equals("")) {
             try {
-                sql = s + "  having agent_name='" + jComboBox2.getSelectedItem() + "'";
+                sql = s + "  having booking_agents.agent_name='" + jComboBox2.getSelectedItem() + "'";
                 stm = con.prepareStatement(sql);
                 rs = stm.executeQuery();
                 while (rs.next()) {
-                      DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-                   
-                     
-                Object[] row = new Object[12];
-                row[0] = rs.getDate("bookingdate");
-                row[1] = rs.getInt("booking_status_code");
-                row[2] = rs.getString("agent_name");
-                row[3] = rs.getString("flight_no");
-                row[4] = rs.getFloat("cost");
-                row[5] = rs.getFloat("paid");
-                row[6] = rs.getString("is_booked");
-                row[7] = rs.getString("airline_name");
-                row[8] = rs.getString("aircraft_type_name");
+                    DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+
+                    Object[] row = new Object[12];
+                    row[0] = rs.getDate("bookingdate");
+                    row[1] = rs.getInt("booking_status_code");
+                    row[2] = rs.getString("agent_name");
+                    row[3] = rs.getString("flight_no");
+                    row[4] = rs.getFloat("cost");
+                    row[5] = rs.getFloat("paid");
+                    row[6] = rs.getString("is_booked");
+                    row[7] = rs.getString("airline_name");
+                    row[8] = rs.getString("aircraft_type_name");
                     model.addRow(row);
-                    float x = (float) (Math.round(Float.valueOf(rs.getString("sum_total")) * 100.0) / 100.0);
-                    jLabel7.setText(String.valueOf(x));
-                    jLabel5.setText(rs.getString("c_total"));
+                      jLabel7.setText(String.valueOf(rs.getDouble("sum_total")));
+                    jLabel5.setText(String.valueOf(rs.getInt("c_total")));
                 }
             } catch (SQLException | NumberFormatException e) {
-                 System.out.println(e);
-                 e.printStackTrace();
+                System.out.println(e);
+                e.printStackTrace();
 
             }
 
         } //3
         else if (jComboBox3.getSelectedItem().equals("") && jComboBox2.getSelectedItem().equals("") && !jComboBox4.getSelectedItem().equals("")) {
             try {
-                sql = s + " having  airline_name='" + jComboBox4.getSelectedItem() + "'";
+                sql = s + " having  airline.airline_name='" + jComboBox4.getSelectedItem() + "'";
                 stm = con.prepareStatement(sql);
                 rs = stm.executeQuery();
                 while (rs.next()) {
-                       DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-                   
-                     
-                Object[] row = new Object[12];
-                row[0] = rs.getDate("bookingdate");
-                row[1] = rs.getInt("booking_status_code");
-                row[2] = rs.getString("agent_name");
-                row[3] = rs.getString("flight_no");
-                row[4] = rs.getFloat("cost");
-                row[5] = rs.getFloat("paid");
-                row[6] = rs.getString("is_booked");
-                row[7] = rs.getString("airline_name");
-                row[8] = rs.getString("aircraft_type_name");
+                    DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+
+                    Object[] row = new Object[12];
+                    row[0] = rs.getDate("bookingdate");
+                    row[1] = rs.getInt("booking_status_code");
+                    row[2] = rs.getString("agent_name");
+                    row[3] = rs.getString("flight_no");
+                    row[4] = rs.getFloat("cost");
+                    row[5] = rs.getFloat("paid");
+                    row[6] = rs.getString("is_booked");
+                    row[7] = rs.getString("airline_name");
+                    row[8] = rs.getString("aircraft_type_name");
                     model.addRow(row);
-                    float x = (float) (Math.round(Float.valueOf(rs.getString("sum_total")) * 100.0) / 100.0);
-                    jLabel7.setText(String.valueOf(x));
+                     jLabel7.setText(String.valueOf(rs.getDouble("sum_total")));
                     jLabel5.setText(rs.getString("c_total"));
                 }
             } catch (SQLException | NumberFormatException e) {
                 System.out.println(e);
+                  e.printStackTrace();
             }
 
         }
@@ -667,8 +669,7 @@ System.out.println(e);
             rs = stm.executeQuery();
             while (rs.next()) {
                 DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-                   
-                     
+
                 Object[] row = new Object[12];
                 row[0] = rs.getDate("bookingdate");
                 row[1] = rs.getInt("booking_status_code");
@@ -680,12 +681,12 @@ System.out.println(e);
                 row[7] = rs.getString("airline_name");
                 row[8] = rs.getString("aircraft_type_name");
                 model.addRow(row);
-                float x = (float) (Math.round(Float.valueOf(rs.getString("sum_total")) * 100.0) / 100.0);
-                jLabel7.setText(String.valueOf(x));
+                 jLabel7.setText(String.valueOf(rs.getDouble("sum_total")));
                 jLabel5.setText(rs.getString("c_total"));
             }
         } catch (Exception e) {
-             System.out.println(e);
+            System.out.println(e);
+              e.printStackTrace();
 
         }
 
