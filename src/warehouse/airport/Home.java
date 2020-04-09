@@ -600,7 +600,7 @@ public final class Home extends javax.swing.JFrame {
         layeredPanel_Warehouse.setOpaque(true);
         layeredPanel_Warehouse.setLayout(new java.awt.CardLayout());
 
-        dashboard_panel.setBackground(new java.awt.Color(204, 204, 204));
+        dashboard_panel.setBackground(new java.awt.Color(45, 52, 54));
         dashboard_panel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         lbl_time.setBackground(new java.awt.Color(255, 102, 102));
