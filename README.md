@@ -26,6 +26,10 @@ This is the updated version of previous model I designed for Object Oriented Pro
 
 ![CRUD](https://github.com/yeamin21/Airport_Data_Management/blob/master/src/warehouse/resourses/SS_manageAirport.png)
 
+* Admin can search to see data for different date, agent and airlines
+
+![warehouse](https://github.com/yeamin21/AirportDMW/blob/master/src/warehouse/resourses/WarehouseSS.png)
+
 * Customer books flight
 * Booking agent confirms whether 'customers booking' is possible or not
 
