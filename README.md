@@ -22,7 +22,7 @@ This is the updated version of previous model I designed for Object Oriented Pro
 # Features:
 * Visual representation of data for data analyst.
 
-*  Admin can create Create, Read, Update and Delete datas
+*  Admin can create Create, Read, Update and Delete data
 
 ![CRUD](https://github.com/yeamin21/Airport_Data_Management/blob/master/src/warehouse/resourses/SS_manageAirport.png)
 
